@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.2.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!-- 配置扫描的包 -->
+	<context:component-scan base-package="com.oracle.ssh" />
+	<!-- 启用Spring注解配置 -->
+	<context:annotation-config />
+
+    <!-- 引入properties文件 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">	
+	    <property name="location">		
+	    	<value>classpath:database.properties</value>	
+	    </property>
+    </bean>
+    
+    <!-- 配置数据源DataSource，使用c3p0数据源 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    	<property name="driverClass" value="${driver}" /><!-- 数据库驱动类 -->
+    	<property name="jdbcUrl" value="${url}" /><!-- 数据库连接url -->
+    	<property name="user" value="${username}"/><!-- 数据库用户名 -->
+    	<property name="password" value="${password}"/><!-- 数据库密码 -->
+    	<property name="maxPoolSize" value="50"/><!-- 最大连接数 -->
+    	<property name="minPoolSize" value="1" /><!-- 最小连接数 -->
+    	<property name="initialPoolSize" value="1" /><!-- 初始化连接数 -->
+    	<property name="maxIdleTime" value="20" /><!-- 最大空闲时间 -->
+    </bean>
+    
+    <!-- 配置SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"/><!-- 引用上面配置的数据源dataSource -->
+    	<property name="hibernateProperties"><!-- Hibernate属性 -->
+    		<props>
+    			<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop><!-- 数据库方言 -->
+    			<prop key="hibernate.show_sql">true</prop><!-- 是否显示sql语句 -->
+    			<prop key="hibernate.format_sql">true</prop><!-- 是否格式化sql语句 -->
+    			<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop><!-- 使用getCurrentSession()方法 -->
+    		</props>
+    	</property>
+    	<!-- 配置要扫描映射实体类的包 -->
+    	<property name="packagesToScan" value="com.oracle.ssh.entity" />
+    </bean>
+    
+    <!-- 配置事务管理器(与Hibernate整合) -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+  		<property name="sessionFactory" ref="sessionFactory"/>
+ 	</bean>
+    
+    <!-- 注解方式实现事务管理(就可以使用@Transactional注解进行类和方法的事务控制) -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+</beans>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!-- Hibernate核心配置文件-->
+<hibernate-configuration>
+
+    <session-factory>
+    
+        <!-- Oracle数据库连接 -->
+        <property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property><!-- 驱动类 -->
+        <property name="connection.url">jdbc:oracle:thin:@LOCALHOST:1521:ORCL</property><!-- 数据库连接地址 -->
+        <property name="connection.username">TT</property><!-- 用户名 -->
+        <property name="connection.password">1234</property><!-- 口令 -->
+        <!-- 数据方言 -->
+        <property name="dialect">org.hibernate.dialect.OracleDialect</property>
+        <!-- 显示sql语句 -->
+        <property name="show_sql">true</property>
+           <!-- 配置注解实体 -->
+    <mapping class="com.oracle.ssh.entity.User"/>
+     <mapping class="com.oracle.ssh.entity.Product"/>
+      <mapping class="com.oracle.ssh.entity.OrderItem"/>
+       <mapping class="com.oracle.ssh.entity.Order"/>
+        <mapping class="com.oracle.ssh.entity.Category"/>
+        
+    </session-factory>
+    
+ 
+    
+</hibernate-configuration>
